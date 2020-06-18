@@ -31,13 +31,27 @@ virtualbox &
 - Enter _Name_ as "slave-1", _Type_ as "Linux", _Version_ as "Ubuntu (64-bit)".
 
 ![VM-Screen-1](screenshots/1.png)
-- Select the amount of memory (RAM). We select _2048 MB_ (2 GB), arbitrarily.  You can change it up to your needs.
-![VM-Screen-1](screenshots/2.png)
-![VM-Screen-1](screenshots/3.png)
-![VM-Screen-1](screenshots/4.png)
-![VM-Screen-1](screenshots/5.png)
 
-- 
+- Select the amount of memory (RAM). We select _2048 MB_ (2 GB), arbitrarily.  You can change it up to your needs.
+
+![VM-Screen-2](screenshots/2.png)
+
+- Create a _virtual hard disk_ for convenience.
+
+![VM-Screen-3](screenshots/3.png)
+
+- Choose _VDI (VirtualBox Disk Image)_.
+
+![VM-Screen-4](screenshots/4.png)
+
+- _Dynamically allocated_ has its own advantages, so we will choose it. But _fixed-size_ option would also be selected if we were sure that disk size don't need to change in the future.
+
+![VM-Screen-5](screenshots/5.png)
+
+- We will type the name of the new virtual hard disk file as "slave-1". This name is arbitrary, you can change it. Size of the virtual hard disk is **very important**. You should set it at least **20 GB**, 
+
+![VM-Screen-6](screenshots/6.png)
+
 - 
 - 
 - 
