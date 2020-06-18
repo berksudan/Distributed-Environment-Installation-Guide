@@ -99,5 +99,13 @@ exit
 
 ![VM-2-4](screenshots/create_second_slave_machine/4.png)
 
+## 1.5. Update both machines
+
+- Login to both machines and enter the command:
+```bash
+sudo apt update && sudo apt upgrade
+```
+
+
 ## In VirtualBox
 Use bridged network and check the ip for being started with "192.168"
