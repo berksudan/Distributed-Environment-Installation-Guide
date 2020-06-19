@@ -91,21 +91,35 @@ You don't have to do all the things again. Simply, clone the first virtual machi
 
 - After login enter the command below:
 ```bash
-sudo hostnamectl set-hostname slave-2
-exit
+sudo hostnamectl set-hostname slave-2 # Change hostname to slave-2
+exit # Logout to check the new host-name
 ```
 
 - If you see a screen like this, then everything is fine:
 
 ![VM-2-4](screenshots/create_second_slave_machine/4.png)
 
-## 1.5. Update both machines
+## 1.5. Update & Configure Both Slave Machines
+We have 2 Virtual Ubuntu 18 machines. Note that, you can do the cloning operation later. But when you do it later, you should remember to change all variables specific to the machine, such as IP. Now we wil configure IP addresses.
 
-- Login to both machines and enter the command:
+- Log into both machines and enter the command:
 ```bash
 sudo apt update && sudo apt upgrade
 ```
+- Log into one machine (let's say "slave-1") and run the command
+```ifconfig```. You will see that IP address like 10.0.X.Y shown below:
 
+![VM-3-1](screenshots/update_configure_slave_machines/1.png)
+
+However, we need a private network for 3 machines and IP addresses must follow the pattern of "192.168.X.Y". 
+
+- First, we will create our private network interface. We should have "192.168.X.Y" IP adresses in slave machines for communication of devices. Go to ```File > Host Network Manager``` in VirtualBox and hit _Create_. Now you should see "vboxnet".
+
+![VM-3-2](screenshots/update_configure_slave_machines/2.png) 
+
+Be sure that "DHCP Server" option is **enabled**.
+
+- Now, go to _Settings_ of both machines and go to "Network" option. You should select "Attached to" as _Host-only Adapter_ and choose "Name" as _vboxnet0_.  
 
 ## In VirtualBox
-Use bridged network and check the ip for being started with "192.168"
+Use bridged network and check the ip for being started with "192.168". 
