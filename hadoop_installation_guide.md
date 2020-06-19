@@ -1,22 +1,26 @@
-# HDFS, Yarn & Spark Installation Guide in Ubuntu 18 with Virtual Machines
+# HDFS, Hadoop, Yarn & Spark Stand-Alone Cluster Installation in Ubuntu 18.04.4 LTS
 
-At the end we will have:
+**At the end we will have:**
 
-- (2 Slave, 1 Master - 3 Machines)
+- 1 Master Ubuntu-18.04.4 LTS Desktop  Local Machine
+- 2 Slave Ubuntu-18.04.4 LTS Server Virtual Machine
+## Guided
+https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
+
+2 virtual machines ubuntu 18.04, 1 local 18.04 machine. 1 namenodes, 2 datanodes.
 
 ## Install and Configure Virtual Machines using Virtualbox
 Install VirtualBox using bash:
 ```bash
 sudo apt install virtualbox
 ```
-Get 18.04.4 LTS Server Install Image:
-http://releases.ubuntu.com/bionic/ubuntu-18.04.4-live-server-amd64.iso
+Get 18.04.4 LTS Server Install Image: [Official Ubuntu 18.04.4 LTS Live Server ISO](http://releases.ubuntu.com/bionic/ubuntu-18.04.4-live-server-amd64.iso)
 
 
-## Guided
-https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
 
-2 virtual machines ubuntu 18.04, 1 local 16.04/18.04 machine. 1 namenodes, 2 datanodes.
+
+
+
 
 ## In VirtualBox
 Use bridged network and check the ip for being started with "192.168"
