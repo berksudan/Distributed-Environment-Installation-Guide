@@ -14,7 +14,7 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 | slave-1   | 192.168.10.136 | Virtual Ubuntu 18 Machine |
 | slave-2   | 192.168.10.134 | Virtual Ubuntu 18 Machine |
 
-**Note:** If one of this criteria is absent, please go to first guide which is ***Virtual Machine Installation & Configuration Guide***, via the [link](../1- Virtual Machine Installation & Configuration)
+**Note:** If one of this criteria is absent, please go to first guide which is ***Virtual Machine Installation & Configuration Guide***, via the [link](../1-\ Virtual\ Machine\ Installation\ &\ Configuration)
 
 ## 1.1. Download Image File and VirtualBox
 
