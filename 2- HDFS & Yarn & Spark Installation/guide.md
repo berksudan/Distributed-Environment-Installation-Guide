@@ -36,10 +36,10 @@ sudo ln -sf java-8-openjdk* current-java
 ```
 And we can access to our jvm using path ```/usr/lib/jvm/current-java```.
 
-- Now we will add ***java path***.
+- Now we will add ***java path***:
 ```bash
 su spark-user # You must be spark-user, if you are ignore this command.
-echo "export JAVA_HOME=/usr/lib/jvm/current-java" >> ~/.bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/current-java' >> ~/.bashrc
 ```
 **Attention:** If java will also be used by another users, you can do the same for thesesudo apt users.
 
@@ -51,21 +51,37 @@ echo $JAVA_HOME
 You should see ```/usr/lib/jvm/current-java``` in command-line.
 
 ## 1.2. Download & Install Hadoop 2.7
-> This section is for only **master** machine. We will transfer the files to slaves, later.
+> We download Hadoop in only Master first and then transfer Hadoop files to slaves, later.
 - Go to http://apache.claz.org/hadoop/common and find the current 2.7 release. At the time this document was written (June 23, 2020), Hadoop's version 2.7 was in the 7th sub-version.
 
 ![SS-2-1](./screenshots/2_download_install_hadoop2.7/1.png)
-- Download hadoop using command-line:
+- In ***only master machine***, download, untar & move Hadoop files using command-line:
 ```bash
 wget http://apache.claz.org/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+tar xvf hadoop-2.7.7.tar.gz # Untar Hadoop files
+sudo mv hadoop-2.7.7 /opt/ # Move Hadoop files to /opt/ directory
+rm hadoop-2.7.7.tar.gz # Delete archive file
 ```
 
+# HERE# HERE# HERE# HERE# HERE# HERE# HERE# HERE
+
+
+- Go to ```/opt/``` directory, create symbolic link and handle permissions:
+```bash
+cd /opt
+sudo ln -sf hadoop-2.7.7 hadoop # Create symbolic link fot abstraction
+sudo chown spark-user:root ./hadoop* -R # Change own of user to spark-user, group to root
+sudo chmod g+rwx ./hadoop* -R # Change mode to allow group to read-write-execute
+```
+
+- Add hadoop paths to ```$PATH``` variable:
+```bash
+echo 'export PATH=$PATH:/opt/hadoop/bin:/opt/hadoop/sbin' >> ~/.bashrc
+source 
+```
 
 ## In some point
-```bash
-chown spark-user:root -R /usr/local/spark-user
-chmod g+rwx -R /usr/local/spark-user
-```
+
 
 ## References
 * https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
