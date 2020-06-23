@@ -8,6 +8,7 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 - There is a user with the same name for all machines, such as ***spark-user***.
 - You have passwordless SSH access to slaves from master.
 - Hosts (```/etc/hosts```) file is configured for all machines, like shown below:
+
 | Host-Name | IP Address     | Info                      |
 |-----------|----------------|---------------------------|
 | master    | 192.168.10.107 | Local Ubuntu 18 Machine   |
