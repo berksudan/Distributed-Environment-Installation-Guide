@@ -136,7 +136,7 @@ We already know that our local machine's IP is ```192.168.10.107 ```. So we can 
 
 | Host-Name | IP Address     | Info                      |
 |-----------|----------------|---------------------------|
-| master    | 192.168.10.107 | Local Ubuntu Machine      |
+| master    | 192.168.10.107 | Local Ubuntu 18 Machine   |
 | slave-1   | 192.168.10.136 | Virtual Ubuntu 18 Machine |
 | slave-2   | 192.168.10.134 | Virtual Ubuntu 18 Machine |
 
