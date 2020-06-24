@@ -144,15 +144,15 @@ Outputs should be:
 export JAVA_HOME=/usr/lib/jvm/current-java
 ```
 After editing, the relevant lines of the file should look line:
+
 ![SS-3-1](./screenshots/3_configure_hadoop/1.png)
 
-- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/slaves```. If ```localhost``` line is present in the file delete it. Add the following lines only:
+- In **master machine**, we will edit ```$HADOOP_HOME/etc/hadoop/slaves```. If ```localhost``` line is present in the file, delete it. Add the following lines only:
 ```
 slave-1
 slave-2
 ```
-**Note that:** ```slaves``` file renamed to ```workers``` in further Hadoop versions. So if you follow this tutorial for further versions and sure that a file named ```workers``` exists under directory 
-```$HADOOP_HOME/etc/hadoop/```, edit ```workers``` file.
+**Note that:** The file ```slaves``` renamed to ```workers``` in further Hadoop versions. So if you follow this tutorial for further versions of Hadoop and sure that a file named ```workers``` exists under directory ```$HADOOP_HOME/etc/hadoop/```, then edit ```workers```.
 
 - Transfer configuration files directly to slave machines:
 ```bash
