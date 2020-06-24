@@ -19,6 +19,7 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 
 ## 1.1. Install Java 8
 > This section is for **all** (1 master, 2 slaves) machines. Perform all steps in all machines.
+
 **Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should perform the similar but not the same steps. 
 **Note \#2:** OpenJDK (which is a free and open-source implementation of the Java Platform, Standard Edition) is used here.
 
