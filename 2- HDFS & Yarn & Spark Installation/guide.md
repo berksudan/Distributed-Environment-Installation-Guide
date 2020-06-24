@@ -124,16 +124,16 @@ Outputs should be:
 ```xml
 <configuration>
 	<property>
-			<name>dfs.namenode.name.dir</name>
-			<value>/opt/hadoop/data/namenode</value>
+		<name>dfs.namenode.name.dir</name>
+		<value>/opt/hadoop/data/namenode</value>
 	</property>
 	<property>
-			<name>dfs.datanode.data.dir</name>
-			<value>/opt/hadoop/data/datanode</value>
+		<name>dfs.datanode.data.dir</name>
+		<value>/opt/hadoop/data/datanode</value>
 	</property>
 	<property>
-			<name>dfs.replication</name>
-			<value>2</value>
+		<name>dfs.replication</name>
+		<value>2</value>
 	</property>
 </configuration>
 
@@ -173,10 +173,13 @@ start-dfs.sh # or $HADOOP_HOME/sbin/start-dfs.sh
 - Validate that everything started right by running the ```jps``` command as spark-user on all machines.
 
 On master node, you should see ```SecondaryNameNode``` and ```NameNode``` like shown below:
+
 ![SS-3-2](./screenshots/3_configure_hadoop/2.png)
 
 On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown below:
+
 ![SS-3-3](./screenshots/3_configure_hadoop/3.png)
+
 ![SS-3-4](./screenshots/3_configure_hadoop/4.png)
 
 - If everything is allright, you can now access the HDFS web UI by browsing to your Hadoop Master Server port ```50070```. Go to [http://master:50070/](http://master:50070/):
