@@ -20,8 +20,9 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 ## 1.1. Install Java 8
 > This section is for **all** (1 master, 2 slaves) machines. Perform all steps in all machines.
 
-**Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should perform the similar but not the same steps. 
-**Note \#2:** OpenJDK (which is a free and open-source implementation of the Java Platform, Standard Edition) is used here.
+**Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should perform the similar but not the same steps.
+
+**Note \#2:** OpenJDK, which is a free and open-source implementation of the Java Platform - Standard Edition, is used here.
 
 - Install Java Runtime Environment (JRE) and Java Development Kit (JRE) in *all machines*:
 ```bash
@@ -30,21 +31,21 @@ sudo apt install openjdk-8-jdk
 java -version
 ```
 
-- Your JVM (Java Virtual Machine) directory should be located at ```/usr/lib/jvm```. We will create a symbolic link to your jvm for abstraction:
+- Your JVM (Java Virtual Machine) directory should be located under ```/usr/lib/jvm``` directory. We will create a symbolic link to your jvm for abstraction:
 ```bash
 cd /usr/lib/jvm
 sudo ln -sf java-8-openjdk* current-java
 ```
 And we can access to our jvm using path ```/usr/lib/jvm/current-java```.
 
-- Now we will add ***java path***:
+- Now we will add ***java-home path***, i.e. ```$JAVA_HOME```:
 ```bash
-su spark-user # You must be spark-user, if you are ignore this command.
+su spark-user # You must be spark-user, if you are already, ignore this command
 echo 'export JAVA_HOME=/usr/lib/jvm/current-java' >> ~/.bashrc
 ```
-**Attention:** If java will also be used by another users, you can do the same for thesesudo apt users.
+**Attention:** If java will also be used by another users, you can do the same for these users.
 
-- Confirm in all machines that ```$JAVA_HOME``` variable is set correctly:
+- Confirm ```$JAVA_HOME``` variable is set correctly,  _in all machines_:
 ```bash
 source ~/.bashrc # Reload the changed bashrc file
 echo $JAVA_HOME
@@ -54,7 +55,7 @@ You should see ```/usr/lib/jvm/current-java``` in command-line.
 ## 1.2. Download & Install Hadoop 2.7
 - Go to http://apache.claz.org/hadoop/common and find the current 2.7 release. At the time this document was written (June 23, 2020), Hadoop's version 2.7 was in the 7th sub-version.
 
-![SS-2-1](./screenshots/2_download_install_hadoop2.7/1.png)
+![SS-2-1](./screenshots/2_download_install_hadoop/1.png)
 - We will download Hadoop in *Master* first and then transfer Hadoop files to slaves. In ***master machine***, download, untar & move Hadoop files using command-line and copy hadoop files to remote slaves:
 ```bash
 cd ~ # Go to home directory
@@ -106,7 +107,7 @@ Outputs should be:
 /opt/hadoop
 ```
 
-## 1.2. Configure Hadoop
+## 1.3. Configure Hadoop
 > We will first configure *master* machine and then transfer configuration file to remote slaves.
 
 - In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/core-site.xml```.  Your "configuration" tag in this file should look like this:
@@ -123,25 +124,72 @@ Outputs should be:
 ```xml
 <configuration>
 	<property>
-		<name>dfs.namenode.name.dir</name>
-		<value>$HADOOP_HOME/data/namenode</value>
+			<name>dfs.namenode.name.dir</name>
+			<value>/opt/hadoop/data/namenode</value>
 	</property>
 	<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>$HADOOP_HOME/data/datanode</value>
+			<name>dfs.datanode.data.dir</name>
+			<value>/opt/hadoop/data/datanode</value>
 	</property>
 	<property>
-		<name>dfs.replication</name>
-		<value>2</value>
+			<name>dfs.replication</name>
+			<value>2</value>
 	</property>
 </configuration>
+
 ```
+
+- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/hadoop-env.sh```. Find the line contains ```export JAVA_HOME``` and change this line like:
+```bash
+export JAVA_HOME=/usr/lib/jvm/current-java
+```
+After editing, the relevant lines of the file should look line:
+![SS-3-1](./screenshots/3_configure_hadoop/1.png)
+
 - In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/slaves```. If ```localhost``` line is present in the file delete it. Add the following lines only:
 ```
 slave-1
 slave-2
 ```
-**Note that:** ```slaves``` file renamed to ```workers``` in further Hadoop versions. So if you follow this tutorial for further versions and sure that a file named ```workers``` exists under directory ```$HADOOP_HOME/etc/hadoop/```, edit ```workers``` file.
+**Note that:** ```slaves``` file renamed to ```workers``` in further Hadoop versions. So if you follow this tutorial for further versions and sure that a file named ```workers``` exists under directory 
+```$HADOOP_HOME/etc/hadoop/```, edit ```workers``` file.
+
+- Transfer configuration files directly to slave machines:
+```bash
+scp  $HADOOP_HOME/etc/hadoop/* slave-1:$HADOOP_HOME/etc/hadoop/ # For slave-1
+scp  $HADOOP_HOME/etc/hadoop/* slave-2:$HADOOP_HOME/etc/hadoop/ # For slave-2
+```
+
+- In **master machine**, format the HDFS file system:
+```bash
+hdfs namenode -format
+```
+
+- In **master machine**, start HDFS:
+```bash
+start-dfs.sh # or $HADOOP_HOME/sbin/start-dfs.sh
+```
+
+- Validate that everything started right by running the ```jps``` command as spark-user on all machines.
+
+On master node, you should see ```SecondaryNameNode``` and ```NameNode``` like shown below:
+![SS-3-2](./screenshots/3_configure_hadoop/2.png)
+
+On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown below:
+![SS-3-3](./screenshots/3_configure_hadoop/3.png)
+![SS-3-4](./screenshots/3_configure_hadoop/4.png)
+
+- If everything is allright, you can now access the HDFS web UI by browsing to your Hadoop Master Server port ```50070```. Go to [http://master:50070/](http://master:50070/):
+
+![SS-3-5](./screenshots/3_configure_hadoop/5.png)
+If you see a web page like shown above, then everything is OK for now.
+
+**Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is for Hadoop 3.1.1.
+
+- In **master machine**, if you want to stop HDFS run the following command:
+```bash
+stop-dfs.sh # or $HADOOP_HOME/sbin/stop-dfs.sh
+```
 
 ## References
 * https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
