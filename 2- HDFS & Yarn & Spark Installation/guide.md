@@ -185,6 +185,7 @@ On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown belo
 - If everything is OK, you can now access the HDFS web UI by browsing to your Hadoop Master Server port ```50070```. Go to [http://master:50070/](http://master:50070/):
 
 ![SS-3-5](./screenshots/3_configure_hadoop/5.png)
+
 If you see a web page like shown above, then everything is OK for now.
 
 **Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is for Hadoop 3.1.1.
