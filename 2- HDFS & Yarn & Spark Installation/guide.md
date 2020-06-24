@@ -45,7 +45,7 @@ echo 'export JAVA_HOME=/usr/lib/jvm/current-java' >> ~/.bashrc
 ```
 **Attention:** If java will also be used by another users, you can do the same for these users.
 
-- Confirm ```$JAVA_HOME``` variable is set correctly,  _in all machines_:
+- Confirm ```$JAVA_HOME``` variable is set correctly, _in all machines_:
 ```bash
 source ~/.bashrc # Reload the changed bashrc file
 echo $JAVA_HOME
@@ -91,13 +91,23 @@ sudo chmod g+rwx /opt/hadoop* -R # Allow group to read-write-execute
 exit # Logout from slave-2
 ```
 
-- In **all machines**, append hadoop paths to ```$PATH``` variable and set ```$HADOOP_HOME``` variable:
+- In **all machines**, append hadoop paths to ```$PATH``` variable and set Hadoop variables:
 ```bash
 echo 'export PATH=$PATH:/opt/hadoop/bin:/opt/hadoop/sbin' >> ~/.bashrc
 echo 'export HADOOP_HOME=/opt/hadoop' >> ~/.bashrc
 source ~/.bashrc
 echo $PATH # Confirm that $PATH variable is changed properly
-echo $HADOOP_HOME # Confirm that $HADOOP_HOME variable is set properly
+```
+```bash
+# Set Hadoop Variables
+echo '
+# Bash Variables for Hadoop
+export HADOOP_HOME="/opt/hadoop"
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+' >> ~/.bashrc
 ```
 Outputs should be:
 ```bash
@@ -193,6 +203,21 @@ If you see a web page like shown above, then everything is OK for now.
 - In **master machine**, if you want to stop HDFS run the following command:
 ```bash
 stop-dfs.sh # or $HADOOP_HOME/sbin/stop-dfs.sh
+```
+
+## 1.4. Configure Yarn
+> HDFS is installed and configured but it's lack of job scheduling. So we could overcome the problem with Yarn Job Scheduler.
+
+- In all machines,.........
+```bash
+echo 'export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
+source ~/.bashrc # Reload the changed bashrc file
+```
+
+- Set fodglds:
+```bash
+source ~/.bashrc # Reload the changed bashrc file
+echo $JAVA_HOME
 ```
 
 ## References
