@@ -17,9 +17,9 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 
 **Note:** If one of this criteria is absent, please check the first guide ***Virtual Machine Installation & Configuration Guide***, via the [link](../1-%20Virtual%20Machine%20Installation%20%26%20Configuration/guide.md).
 
-## 1.1. Install Java 8 in All Machines
-> This section is for **all** (1 master, 2 slaves) machine.
-**Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should follow the similar but not the same steps. 
+## 1.1. Install Java 8
+> This section is for **all** (1 master, 2 slaves) machines. Perform all steps in all machines.
+**Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should perform the similar but not the same steps. 
 **Note \#2:** OpenJDK (which is a free and open-source implementation of the Java Platform, Standard Edition) is used here.
 
 - Install Java Runtime Environment (JRE) and Java Development Kit (JRE) in *all machines*:
@@ -51,37 +51,96 @@ echo $JAVA_HOME
 You should see ```/usr/lib/jvm/current-java``` in command-line.
 
 ## 1.2. Download & Install Hadoop 2.7
-> We download Hadoop in only Master first and then transfer Hadoop files to slaves, later.
 - Go to http://apache.claz.org/hadoop/common and find the current 2.7 release. At the time this document was written (June 23, 2020), Hadoop's version 2.7 was in the 7th sub-version.
 
 ![SS-2-1](./screenshots/2_download_install_hadoop2.7/1.png)
-- In ***only master machine***, download, untar & move Hadoop files using command-line:
+- We will download Hadoop in *Master* first and then transfer Hadoop files to slaves. In ***master machine***, download, untar & move Hadoop files using command-line and copy hadoop files to remote slaves:
 ```bash
+cd ~ # Go to home directory
 wget http://apache.claz.org/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz
-tar xvf hadoop-2.7.7.tar.gz # Untar Hadoop files
-sudo mv hadoop-2.7.7 /opt/ # Move Hadoop files to /opt/ directory
-rm hadoop-2.7.7.tar.gz # Delete archive file
+tar -xvf hadoop-2.7.7.tar.gz # Untar Hadoop files
+scp -r ./hadoop-2.7.7 spark-user@slave-1:~/ # Copy files to slave-1
+scp -r ./hadoop-2.7.7 spark-user@slave-2:~/ # Copy files to slave-2
+rm hadoop-2.7.7.tar.gz # Delete redundant archive file
 ```
 
-# HERE# HERE# HERE# HERE# HERE# HERE# HERE# HERE
-
-
-- Go to ```/opt/``` directory, create symbolic link and handle permissions:
+- In **all machines**, we will move the hadoop files under ```/opt``` directory for maintainability and handle permissions: 
 ```bash
-cd /opt
-sudo ln -sf hadoop-2.7.7 hadoop # Create symbolic link fot abstraction
-sudo chown spark-user:root ./hadoop* -R # Change own of user to spark-user, group to root
-sudo chmod g+rwx ./hadoop* -R # Change mode to allow group to read-write-execute
+# For master Machine
+sudo mv hadoop-2.7.7 /opt/ # Move Hadoop files to /opt/ directory
+sudo ln -sf /opt/hadoop-2.7.7 /opt/hadoop # Create symbolic link for abstraction
+sudo chown spark-user:root /opt/hadoop* -R # Change user:spark-user, group:root
+sudo chmod g+rwx /opt/hadoop* -R # Allow group to read-write-execute
+
+# For slave-1 Machine
+ssh slave-1
+sudo mv hadoop-2.7.7 /opt/ # Move Hadoop files to /opt/ directory
+sudo ln -sf /opt/hadoop-2.7.7 /opt/hadoop # Create symbolic link for abstraction
+sudo chown spark-user:root /opt/hadoop* -R # Change user:spark-user, group:root
+sudo chmod g+rwx /opt/hadoop* -R # Allow group to read-write-execute
+exit # Logout from slave-1
+
+# For slave-2 Machine
+ssh slave-2
+sudo mv hadoop-2.7.7 /opt/ # Move Hadoop files to /opt/ directory
+sudo ln -sf /opt/hadoop-2.7.7 /opt/hadoop # Create symbolic link for abstraction
+sudo chown spark-user:root /opt/hadoop* -R # Change user:spark-user, group:root
+sudo chmod g+rwx /opt/hadoop* -R # Allow group to read-write-execute
+exit # Logout from slave-2
 ```
 
-- Add hadoop paths to ```$PATH``` variable:
+- In **all machines**, append hadoop paths to ```$PATH``` variable and set ```$HADOOP_HOME``` variable:
 ```bash
 echo 'export PATH=$PATH:/opt/hadoop/bin:/opt/hadoop/sbin' >> ~/.bashrc
-source 
+echo 'export HADOOP_HOME=/opt/hadoop' >> ~/.bashrc
+source ~/.bashrc
+echo $PATH # Confirm that $PATH variable is changed properly
+echo $HADOOP_HOME # Confirm that $HADOOP_HOME variable is set properly
+```
+Outputs should be:
+```bash
+# For $PATH:
+<OTHER_PATHS>:/opt/hadoop/bin:/opt/hadoop/sbin
+# For $HADOOP_HOME:
+/opt/hadoop
 ```
 
-## In some point
+## 1.2. Configure Hadoop
+> We will first configure *master* machine and then transfer configuration file to remote slaves.
 
+- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/core-site.xml```.  Your "configuration" tag in this file should look like this:
+```xml
+<configuration>
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://master:9000</value>
+	</property>
+</configuration>
+```
+
+- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/hdfs-site.xml```.  Your "configuration" tag in this file should look like this:
+```xml
+<configuration>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>$HADOOP_HOME/data/namenode</value>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>$HADOOP_HOME/data/datanode</value>
+	</property>
+	<property>
+		<name>dfs.replication</name>
+		<value>2</value>
+	</property>
+</configuration>
+```
+- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/slaves```. If ```localhost``` line is present in the file delete it. Add the following lines only:
+```
+slave-1
+slave-2
+```
+**Note that:** ```slaves``` file renamed to ```workers``` in further Hadoop versions. So if you follow this tutorial for further versions and sure that a file named ```workers``` exists under directory ```$HADOOP_HOME/etc/hadoop/```, edit ```workers``` file.
 
 ## References
 * https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
