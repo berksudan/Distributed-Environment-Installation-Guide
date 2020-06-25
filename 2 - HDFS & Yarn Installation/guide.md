@@ -1,6 +1,6 @@
-# HDFS & Yarn Installation Guide
+# 2 - HDFS & Yarn Installation Guide
 
-We will install and configure virtual machines using VirtualBox. In this tutorial it is accepted that:
+We will install and configure HDFS & Yarn. In this tutorial it is accepted that:
 - You have 3 machines (1 master, 2 slaves).
 - You have installed Ubuntu 18.04.4 LTS in your *local* (master) machine and in slaves.
 - You have updated and upgraded all packages in all machines.
@@ -15,9 +15,9 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 | slave-1   | 192.168.10.140 | Virtual Ubuntu 18 Machine |
 | slave-2   | 192.168.10.141 | Virtual Ubuntu 18 Machine |
 
-**Note:** If one of this criteria is absent, please check the first guide ***Virtual Machine Installation & Configuration Guide***, via the [link](../1-%20Virtual%20Machine%20Installation%20%26%20Configuration/guide.md).
+**Note:** If one of this criteria is absent, please check the first guide [Virtual Machine Installation & Configuration Guide](../1%20-%20Virtual%20Machine%20Installation%20%26%20Configuration/guide.md).
 
-## 1.1. Install Java 8
+## 2.1. Install Java 8
 > This section is for **all** (1 master, 2 slaves) machines. Perform all steps in all machines.
 
 **Note \#1:** This approach is valid when using version 8 (1.8) of Java. For Java-11 or other versions, you should perform the similar but not the same steps.
@@ -52,7 +52,7 @@ echo $JAVA_HOME
 ```
 You should see ```/usr/lib/jvm/current-java``` in command-line.
 
-## 1.2. Download & Install Hadoop 2.7
+## 2.2. Download & Install Hadoop 2.7
 - Go to http://apache.claz.org/hadoop/common and find the current 2.7 release. At the time this document was written (June 23, 2020), Hadoop's version 2.7 was in the 7th sub-version.
 
 ![SS-2-1](./screenshots/2_download_install_hadoop/1.png)
@@ -61,9 +61,9 @@ You should see ```/usr/lib/jvm/current-java``` in command-line.
 cd ~ # Go to home directory
 wget http://apache.claz.org/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz
 tar -xvf hadoop-2.7.7.tar.gz # Untar Hadoop files
+rm hadoop-2.7.7.tar.gz # Delete redundant archive file
 scp -r ./hadoop-2.7.7 spark-user@slave-1:~/ # Copy files to slave-1
 scp -r ./hadoop-2.7.7 spark-user@slave-2:~/ # Copy files to slave-2
-rm hadoop-2.7.7.tar.gz # Delete redundant archive file
 ```
 
 - In **all machines**, we will move the hadoop files under ```/opt``` directory for maintainability and handle permissions: 
@@ -116,7 +116,7 @@ echo $HADOOP_HOME $HADOOP_COMMON_HOME $HADOOP_CONF_DIR $HADOOP_HDFS_HOME $HADOOP
 ```
 Output should be: ```/opt/hadoop /opt/hadoop /opt/hadoop/etc/hadoop /opt/hadoop /opt/hadoop```
 
-## 1.3. Configure Hadoop
+## 2.3. Configure Hadoop
 > We will first configure *master* machine and then transfer configuration file to remote slaves.
 
 - In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/core-site.xml```.  Your "configuration" tag in this file should look like this:
@@ -152,7 +152,7 @@ Output should be: ```/opt/hadoop /opt/hadoop /opt/hadoop/etc/hadoop /opt/hadoop 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/current-java
 ```
-After editing, the relevant lines of the file should look line:
+After editing, the relevant lines of the file should look like:
 
 ![SS-3-1](./screenshots/3_configure_hadoop/1.png)
 
@@ -197,14 +197,14 @@ On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown belo
 
 If you see a web page like shown above and _**Live Nodes**_ attribute is _2_, then everything is OK. This indicates that you have 1 name-node (the one which this web-site runs on) and 2 live data-nodes (as _live nodes_).
 
-**Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is for Hadoop 3.1.1.
+**Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is used for Hadoop 3.1.1.
 
 - In **master machine**, if you want to stop HDFS run the following command:
 ```bash
 stop-dfs.sh # or $HADOOP_HOME/sbin/stop-dfs.sh
 ```
 
-## 1.4. Configure Yarn
+## 2.4. Configure Yarn
 > HDFS is installed and configured but it's lack of job scheduling. So we could overcome the problem with Yarn Job Scheduler.
 
 - In **all machines**, export ```$HADOOP_YARN_HOME``` variable:
@@ -262,7 +262,7 @@ You should see that _2 nodes_ are running like shown below:
 ```bash
 stop-yarn.sh # or $HADOOP_HOME/sbin/stop-yarn.sh
 ```
-## 1.5. Test Hadoop & Yarn
+## 2.5. Test Hadoop & Yarn
 
 - In **master machine**, start HDFS & yarn:
 ```bash
@@ -272,7 +272,7 @@ start-dfs.sh && start-yarn.sh
 
 - Validate that everything is OK so far with [Hadoop Web UI](http://master:8088/cluster).
 Web-page should look like:
-![SS-5-1](./screenshots/5_hadoop_yarn/1.png)
+![SS-5-1](./screenshots/5_test_hadoop_yarn/1.png)
 
 If you see a web page like shown above and _**Active Nodes**_ attribute is _2_, then everything is OK.
 
@@ -282,7 +282,7 @@ yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples*.jar pi 1
 ```
 Output should be like shown below:
 
-![SS-5-2](./screenshots/5_hadoop_yarn/2.png)
+![SS-5-2](./screenshots/5_test_hadoop_yarn/2.png)
 
 ## References
 * https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041
