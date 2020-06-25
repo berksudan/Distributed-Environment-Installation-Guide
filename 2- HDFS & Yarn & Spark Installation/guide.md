@@ -91,13 +91,15 @@ sudo chmod g+rwx /opt/hadoop* -R # Allow group to read-write-execute
 exit # Logout from slave-2
 ```
 
-- In **all machines**, append hadoop paths to ```$PATH``` variable and set Hadoop variables:
+- In **all machines**, append hadoop paths to ```$PATH``` variable:
 ```bash
 echo 'export PATH=$PATH:/opt/hadoop/bin:/opt/hadoop/sbin' >> ~/.bashrc
-echo 'export HADOOP_HOME=/opt/hadoop' >> ~/.bashrc
-source ~/.bashrc
+source ~/.bashrc # Reload the changed bashrc file
 echo $PATH # Confirm that $PATH variable is changed properly
 ```
+Output should be:```<OTHER_PATHS>:/opt/hadoop/bin:/opt/hadoop/sbin```
+
+- In **all machines**, export Hadoop variables:
 ```bash
 # Set Hadoop Variables
 echo '
@@ -108,14 +110,11 @@ export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 export HADOOP_HDFS_HOME=$HADOOP_HOME
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 ' >> ~/.bashrc
+
+source ~/.bashrc # Reload the changed bashrc file
+echo $HADOOP_HOME $HADOOP_COMMON_HOME $HADOOP_CONF_DIR $HADOOP_HDFS_HOME $HADOOP_MAPRED_HOME
 ```
-Outputs should be:
-```bash
-# For $PATH:
-<OTHER_PATHS>:/opt/hadoop/bin:/opt/hadoop/sbin
-# For $HADOOP_HOME:
-/opt/hadoop
-```
+Output should be: ```/opt/hadoop /opt/hadoop /opt/hadoop/etc/hadoop /opt/hadoop /opt/hadoop```
 
 ## 1.3. Configure Hadoop
 > We will first configure *master* machine and then transfer configuration file to remote slaves.
@@ -135,11 +134,11 @@ Outputs should be:
 <configuration>
 	<property>
 		<name>dfs.namenode.name.dir</name>
-		<value>/opt/hadoop/data/namenode</value>
+		<value>/opt/hadoop/data/nameNode</value>
 	</property>
 	<property>
 		<name>dfs.datanode.data.dir</name>
-		<value>/opt/hadoop/data/datanode</value>
+		<value>/opt/hadoop/data/dataNode</value>
 	</property>
 	<property>
 		<name>dfs.replication</name>
@@ -196,7 +195,7 @@ On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown belo
 
 ![SS-3-5](./screenshots/3_configure_hadoop/5.png)
 
-If you see a web page like shown above, then everything is OK for now.
+If you see a web page like shown above and _**Live Nodes**_ attribute is _2_, then everything is OK. This indicates that you have 1 name-node (the one which this web-site runs on) and 2 live data-nodes (as _live nodes_).
 
 **Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is for Hadoop 3.1.1.
 
@@ -208,17 +207,82 @@ stop-dfs.sh # or $HADOOP_HOME/sbin/stop-dfs.sh
 ## 1.4. Configure Yarn
 > HDFS is installed and configured but it's lack of job scheduling. So we could overcome the problem with Yarn Job Scheduler.
 
-- In all machines,.........
+- In **all machines**, export ```$HADOOP_YARN_HOME``` variable:
 ```bash
-echo 'export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
+echo '# Bash Variables for Yarn
+export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
+
 source ~/.bashrc # Reload the changed bashrc file
+echo $HADOOP_YARN_HOME
+```
+Output should be: ```/opt/hadoop```
+
+- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/yarn-site.xml```.  Your "configuration" tag in this file should look like this:
+```xml
+<configuration>
+	<property>
+		<name>yarn.resourcemanager.hostname</name>
+		<value>master</value>
+	</property>
+</configuration>
 ```
 
-- Set fodglds:
+- In *master machine*, transfer ```yarn-site.xml``` file to slave machines:
 ```bash
-source ~/.bashrc # Reload the changed bashrc file
-echo $JAVA_HOME
+scp $HADOOP_HOME/etc/hadoop/yarn-site.xml slave-1:$HADOOP_HOME/etc/hadoop/yarn-site.xml # Copy yarn config to slave-1
+scp $HADOOP_HOME/etc/hadoop/yarn-site.xml slave-2:$HADOOP_HOME/etc/hadoop/yarn-site.xml # Copy yarn config to slave-2
 ```
+
+- In **master machine**, start Yarn:
+```bash
+start-yarn.sh # or $HADOOP_HOME/sbin/start-yarn.sh
+```
+
+- Validate that everything started right by running the ```jps``` command as spark-user on all machines.
+
+On master node, you should see ```ResourceManager``` like shown below:
+
+![SS-4-1](./screenshots/4_configure_yarn/1.png)
+
+On slave nodes (slave-1, slave-2), you should see ```NodeManager``` like shown below:
+
+![SS-4-2](./screenshots/4_configure_yarn/2.png)
+
+![SS-4-3](./screenshots/4_configure_yarn/3.png)
+
+- Make sure that yarn is running on 2 slave machines:
+```bash 
+yarn node --list
+``` 
+You should see that _2 nodes_ are running like shown below:
+
+![SS-4-4](./screenshots/4_configure_yarn/4.png)
+
+- In **master machine**, if you want to stop Yarn run the following command:
+```bash
+stop-yarn.sh # or $HADOOP_HOME/sbin/stop-yarn.sh
+```
+## 1.5. Test Hadoop & Yarn
+
+- In **master machine**, start HDFS & yarn:
+```bash
+su spark-user # Login as spark-user, if you are already, ignore this
+start-dfs.sh && start-yarn.sh
+```
+
+- Validate that everything is OK so far with [Hadoop Web UI](http://master:8088/cluster).
+Web-page should look like:
+![SS-5-1](./screenshots/5_hadoop_yarn/1.png)
+
+If you see a web page like shown above and _**Active Nodes**_ attribute is _2_, then everything is OK.
+
+- Run Hadoop job example _Calculate PI_:
+```bash
+yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples*.jar pi 16 1000
+```
+Output should be like shown below:
+
+![SS-5-2](./screenshots/5_hadoop_yarn/2.png)
 
 ## References
 * https://dzone.com/articles/install-a-hadoop-cluster-on-ubuntu-18041

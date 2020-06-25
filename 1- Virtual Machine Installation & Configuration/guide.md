@@ -140,15 +140,17 @@ We already know that our local machine's IP is ```192.168.10.107 ```. So we can 
 | slave-1   | 192.168.10.140 | Virtual Ubuntu 18 Machine |
 | slave-2   | 192.168.10.141 | Virtual Ubuntu 18 Machine |
 
-- In _master machine_ (local machine), we will add these hostnames in order to be safe in the future. Open ```/etc/hosts``` file with your favorite text editor (gedit,GNU Emacs, Nano, vim, etc.) and add the following lines to the top of the document:
+- In _**all machines**_, we will add these hostnames in order to be safe in the future. Open ```/etc/hosts``` file with your favorite text editor (gedit,GNU Emacs, Nano, vim, etc.) and add the following lines to the top of the document:
 ```bash
 192.168.10.107	master
 192.168.10.140	slave-1	
 192.168.10.141	slave-2
 ```
-and file look will look like:
+and ```/etc/hosts``` file of all machines will look like:
 
 ![SS-4-7](./screenshots/4_network_configuration/7.png)
+![SS-4-8](./screenshots/4_network_configuration/8.png)
+![SS-4-9](./screenshots/4_network_configuration/9.png)
 
 - In order to be sure that everything is fine so far, ping all machines in local machine:
 
@@ -160,7 +162,7 @@ ping slave-2
 
 - You should see that ICMP packages find slaves and master machines:
 
-![SS-4-8](./screenshots/4_network_configuration/8.png)
+![SS-4-10](./screenshots/4_network_configuration/10.png)
 
 ## 1.5. SSH Configuration
 - First let's create a linux user dedicated to spark & hdfs operations. We created "spark-user" users in slave machines before, so we can add a user with same name in _master machine._ In master machine run the following commands:
