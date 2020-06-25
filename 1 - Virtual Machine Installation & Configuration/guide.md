@@ -1,4 +1,4 @@
-# Virtual Machine Installation & Configuration Guide
+# 1 - Virtual Machine Installation & Configuration Guide
 
 We will install and configure virtual machines using VirtualBox. In this tutorial it is accepted that:
 - You have already installed Ubuntu 18.04.4 LTS in your *local* computer.

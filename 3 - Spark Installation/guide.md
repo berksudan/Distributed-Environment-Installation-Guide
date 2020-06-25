@@ -45,33 +45,34 @@ Scala code runner version 2.11.12 -- Copyright 2002-2017, LAMP/EPFL
 - We will download Spark in *Master* first and then transfer Spark files to slaves. In ***master machine***, download, untar & move Spark files using command-line and copy Spark files to remote slaves:
 ```bash
 cd ~ # Go to home directory
-wget https://downloads.apache.org/spark/spark-2.4.5/spark-2.4.5.tgz
-tar -xvf spark-2.4.5.tgz  # Untar Spark files
-rm ./spark-2.4.5.tgz # Delete redundant archive file
-scp -r ./spark-2.4.5 spark-user@slave-1:~/ # Copy files to slave-1
-scp -r ./spark-2.4.5 spark-user@slave-2:~/ # Copy files to slave-2
+wget https://downloads.apache.org/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
+tar -xvf spark-2.4.5-bin-hadoop2.7.tgz  # Untar Spark files
+rm ./spark-2.4.5-bin-hadoop2.7.tgz # Delete redundant archive file
+scp -r ./spark-2.4.5-bin-hadoop2.7 spark-user@slave-1:~/ # Copy files to slave-1
+scp -r ./spark-2.4.5-bin-hadoop2.7 spark-user@slave-2:~/ # Copy files to slave-2
 ```
+**Note:** We will use binary distro builded with _Hadoop 2.7_, since we installed Hadoop 2.7 before. Make sure that your version is not _src (source)_ or different than your installed _Hadoop version_.
 
 - In **all machines**, we will move the hadoop files under ```/opt``` directory for maintainability and handle permissions: 
 ```bash
 # For master Machine
-sudo mv spark-2.4.5 /opt/ # Move Spark files to /opt/ directory
-sudo ln -sf /opt/spark-2.4.5 /opt/spark # Create symbolic link for abstraction
+sudo mv spark-2.4.5-bin-hadoop2.7 /opt/ # Move Spark files to /opt/ directory
+sudo ln -sf /opt/spark-2.4.5-bin-hadoop2.7 /opt/spark # Create symbolic link for abstraction
 sudo chown spark-user:root /opt/spark* -R # Change user:spark-user, group:root
 sudo chmod g+rwx /opt/spark* -R # Allow group to read-write-execute
 
 # For slave-1 Machine
 ssh slave-1
-sudo mv spark-2.4.5 /opt/ # Move Spark files to /opt/ directory
-sudo ln -sf /opt/spark-2.4.5 /opt/spark # Create symbolic link for abstraction
+sudo mv spark-2.4.5-bin-hadoop2.7 /opt/ # Move Spark files to /opt/ directory
+sudo ln -sf /opt/spark-2.4.5-bin-hadoop2.7 /opt/spark # Create symbolic link for abstraction
 sudo chown spark-user:root /opt/spark* -R # Change user:spark-user, group:root
 sudo chmod g+rwx /opt/spark* -R # Allow group to read-write-execute
 exit # Logout from slave-1
 
 # For slave-2 Machine
 ssh slave-2
-sudo mv spark-2.4.5 /opt/ # Move Spark files to /opt/ directory
-sudo ln -sf /opt/spark-2.4.5 /opt/spark # Create symbolic link for abstraction
+sudo mv spark-2.4.5-bin-hadoop2.7 /opt/ # Move Spark files to /opt/ directory
+sudo ln -sf /opt/spark-2.4.5-bin-hadoop2.7 /opt/spark # Create symbolic link for abstraction
 sudo chown spark-user:root /opt/spark* -R # Change user:spark-user, group:root
 sudo chmod g+rwx /opt/spark* -R # Allow group to read-write-execute
 exit # Logout from slave-2
@@ -116,120 +117,35 @@ slave-2
 
 Your ```$SPARK_HOME/conf/slaves``` file should look like:
 
-- In **master machine**, format the HDFS file system:
-```bash
-hdfs namenode -format
-```
+![SS-3-1](./screenshots/3_configure_spark/1.png)
 
 - In **master machine**, start HDFS:
 ```bash
-start-dfs.sh # or $HADOOP_HOME/sbin/start-dfs.sh
+$SPARK_HOME/sbin/start-all.sh
 ```
 
 - Validate that everything started right by running the ```jps``` command as spark-user on all machines.
 
-On master node, you should see ```SecondaryNameNode``` and ```NameNode``` like shown below:
+On master node, you should see ```Master``` like shown below:
 
-![SS-3-2](./screenshots/3_configure_hadoop/2.png)
+![SS-3-2](./screenshots/3_configure_spark/2.png)
 
-On slave nodes (slave-1, slave-2), you should see ```DataNode``` like shown below:
+On slave nodes (slave-1, slave-2), you should see ```Worker``` like shown below:
 
-![SS-3-3](./screenshots/3_configure_hadoop/3.png)
+![SS-3-3](./screenshots/3_configure_spark/3.png)
 
-![SS-3-4](./screenshots/3_configure_hadoop/4.png)
+![SS-3-4](./screenshots/3_configure_spark/4.png)
 
-- If everything is OK, you can now access the HDFS web UI by browsing to your Hadoop Master Server port ```50070```. Go to [http://master:50070/](http://master:50070/):
+- If everything is OK, you can now access the Spark Web UI by browsing via the link [http://master:8080/](http://master:8080/):
 
-![SS-3-5](./screenshots/3_configure_hadoop/5.png)
+![SS-3-5](./screenshots/3_configure_spark/5.png)
 
-If you see a web page like shown above and _**Live Nodes**_ attribute is _2_, then everything is OK. This indicates that you have 1 name-node (the one which this web-site runs on) and 2 live data-nodes (as _live nodes_).
+If you see a web page like shown above and _**Alive Workers**_ attribute is _2_, then everything is OK. This indicates that you have 1 master-node (the one which this web-site runs on) and 2 live worker-nodes (as _alive nodes_).
 
-**Note that:** In other versions of Hadoop, port number may change. For example, port number ```9870``` is used for Hadoop 3.1.1.
-
-- In **master machine**, if you want to stop HDFS run the following command:
+- In **master machine**, if you want to stop Spark run the following command:
 ```bash
-stop-dfs.sh # or $HADOOP_HOME/sbin/stop-dfs.sh
+$SPARK_HOME/sbin/stop-all.sh
 ```
-
-## 3.4. Configure Yarn
-> HDFS is installed and configured but it's lack of job scheduling. So we could overcome the problem with Yarn Job Scheduler.
-
-- In **all machines**, export ```$HADOOP_YARN_HOME``` variable:
-```bash
-echo '# Bash Variables for Yarn
-export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
-
-source ~/.bashrc # Reload the changed bashrc file
-echo $HADOOP_YARN_HOME
-```
-Output should be: ```/opt/hadoop```
-
-- In *master machine*, we will edit ```$HADOOP_HOME/etc/hadoop/yarn-site.xml```.  Your "configuration" tag in this file should look like this:
-```xml
-<configuration>
-	<property>
-		<name>yarn.resourcemanager.hostname</name>
-		<value>master</value>
-	</property>
-</configuration>
-```
-
-- In *master machine*, transfer ```yarn-site.xml``` file to slave machines:
-```bash
-scp $HADOOP_HOME/etc/hadoop/yarn-site.xml slave-1:$HADOOP_HOME/etc/hadoop/yarn-site.xml # Copy yarn config to slave-1
-scp $HADOOP_HOME/etc/hadoop/yarn-site.xml slave-2:$HADOOP_HOME/etc/hadoop/yarn-site.xml # Copy yarn config to slave-2
-```
-
-- In **master machine**, start Yarn:
-```bash
-start-yarn.sh # or $HADOOP_HOME/sbin/start-yarn.sh
-```
-
-- Validate that everything started right by running the ```jps``` command as spark-user on all machines.
-
-On master node, you should see ```ResourceManager``` like shown below:
-
-![SS-4-1](./screenshots/4_configure_yarn/1.png)
-
-On slave nodes (slave-1, slave-2), you should see ```NodeManager``` like shown below:
-
-![SS-4-2](./screenshots/4_configure_yarn/2.png)
-
-![SS-4-3](./screenshots/4_configure_yarn/3.png)
-
-- Make sure that yarn is running on 2 slave machines:
-```bash 
-yarn node --list
-``` 
-You should see that _2 nodes_ are running like shown below:
-
-![SS-4-4](./screenshots/4_configure_yarn/4.png)
-
-- In **master machine**, if you want to stop Yarn run the following command:
-```bash
-stop-yarn.sh # or $HADOOP_HOME/sbin/stop-yarn.sh
-```
-## 3.5. Test Hadoop & Yarn
-
-- In **master machine**, start HDFS & yarn:
-```bash
-su spark-user # Login as spark-user, if you are already, ignore this
-start-dfs.sh && start-yarn.sh
-```
-
-- Validate that everything is OK so far with [Hadoop Web UI](http://master:8088/cluster).
-Web-page should look like:
-![SS-5-1](./screenshots/5_hadoop_yarn/1.png)
-
-If you see a web page like shown above and _**Active Nodes**_ attribute is _2_, then everything is OK.
-
-- Run Hadoop job example _Calculate PI_:
-```bash
-yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples*.jar pi 16 1000
-```
-Output should be like shown below:
-
-![SS-5-2](./screenshots/5_hadoop_yarn/2.png)
 
 ## References
 * https://medium.com/ymedialabs-innovation/apache-spark-on-a-multi-node-cluster-b75967c8cb2b
