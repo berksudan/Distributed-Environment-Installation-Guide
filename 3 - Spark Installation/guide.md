@@ -17,7 +17,6 @@ We will install and configure Spark 2.4. In this tutorial it is accepted that:
 
 - Java 8 is installed.
 - Hadoop, HDFS and Yarn is configured and installed.
-- Slaves and master machines can connect to each other via SSH _passwordless_.
 
 **Note:** If one of this criteria is absent, please check the first guide [Virtual Machine Installation & Configuration Guide](../1%20-%20Virtual%20Machine%20Installation%20%26%20Configuration/guide.md) and second guide [HDFS & Yarn Installation Guide](../2%20-%20HDFS%20&%20Yarn%20Installation/guide.md).
 
