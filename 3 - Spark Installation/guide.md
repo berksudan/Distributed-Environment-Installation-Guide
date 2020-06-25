@@ -39,7 +39,7 @@ Scala code runner version 2.11.12 -- Copyright 2002-2017, LAMP/EPFL
 ```
 
 ## 3.2. Download & Install Spark 2.4
-- Go to https://downloads.apache.org/spark and find the current 2.4 release. At the time this document was written (June 25, 2020), Hadoop's version 2.4 was in the 5th sub-version and 6th sub-version. We will choose _version 2.4.5_ in this tutorial.
+- Go to https://downloads.apache.org/spark and find the current 2.4 release. At the time this document was written (June 25, 2020), Spark's version 2.4 was in the 5th sub-version and 6th sub-version. We will choose _version 2.4.5_ in this tutorial.
 
 ![SS-2-1](./screenshots/2_download_install_spark/1.png)
 - We will download Spark in *Master* first and then transfer Spark files to slaves. In ***master machine***, download, untar & move Spark files using command-line and copy Spark files to remote slaves:
@@ -91,7 +91,7 @@ echo $PATH $SPARK_HOME # Confirm that $PATH and $SPARK_HOME variable is changed 
 Output should be: ```<OTHER_PATHS>:/opt/hadoop/bin:/opt/spark/bin /opt/spark```.
 
 ## 3.3. Configure Spark
-> We will first configure *master* machine only.
+> We will configure *master* machine only.
 
 - In *master machine*, we will edit ```$SPARK_HOME/conf/spark-env.sh```. But before, change ```spark-env.sh.template``` to ```spark-env.sh```:
 ```bash
@@ -119,7 +119,7 @@ Your ```$SPARK_HOME/conf/slaves``` file should look like:
 
 ![SS-3-1](./screenshots/3_configure_spark/1.png)
 
-- In **master machine**, start HDFS:
+- In **master machine**, start Spark:
 ```bash
 $SPARK_HOME/sbin/start-all.sh
 ```
@@ -140,7 +140,7 @@ On slave nodes (slave-1, slave-2), you should see ```Worker``` like shown below:
 
 ![SS-3-5](./screenshots/3_configure_spark/5.png)
 
-If you see a web page like shown above and _**Alive Workers**_ attribute is _2_, then everything is OK. This indicates that you have 1 master-node (the one which this web-site runs on) and 2 live worker-nodes (as _alive nodes_).
+If you see a web page like shown above and _**Alive Workers**_ attribute is _2_, then everything is OK. This indicates that you have 1 master-node (the one which this web-site runs on) and 2 alive worker-nodes (as _alive nodes_).
 
 - In **master machine**, if you want to stop Spark run the following command:
 ```bash
