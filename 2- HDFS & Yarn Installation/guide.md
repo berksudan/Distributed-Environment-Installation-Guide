@@ -1,4 +1,4 @@
-# HDFS & Yarn & Spark Installation Guide
+# HDFS & Yarn Installation Guide
 
 We will install and configure virtual machines using VirtualBox. In this tutorial it is accepted that:
 - You have 3 machines (1 master, 2 slaves).
