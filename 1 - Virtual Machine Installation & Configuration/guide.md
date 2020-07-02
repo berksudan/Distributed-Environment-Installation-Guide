@@ -7,16 +7,16 @@ We will install and configure virtual machines using VirtualBox. In this tutoria
 
 ## 1.1. Download Image File and VirtualBox
 
-- Install VirtualBox from Command Line:
+- Install VirtualBox from command-line:
 ```bash
 sudo apt install virtualbox
 ```
 - Get 18.04.4 LTS Server Install Image:
-You can download iso file from the link: [Official Ubuntu 18.04.4 LTS Live Server ISO](http://releases.ubuntu.com/bionic/ubuntu-18.04.4-live-server-amd64.iso)
+You can download ISO file from the link: [Official Ubuntu 18.04.4 LTS Live Server ISO](http://releases.ubuntu.com/bionic/ubuntu-18.04.4-live-server-amd64.iso)
 
 ***OR***
 
-You can download iso file from command line:
+You can download image (ISO) file from command-line:
 ```bash
 cd ~/Downloads
 wget http://releases.ubuntu.com/bionic/ubuntu-18.04.4-live-server-amd64.iso
@@ -62,6 +62,8 @@ virtualbox &
 
 ![SS-2-10](./screenshots/2_create_first_slave_machine/10.png)
 
+**Note:** You can choose a different user-name, It is totally up to you.
+
 - Select "Install OpenSSH Server".
 
 ![SS-2-11](./screenshots/2_create_first_slave_machine/11.png)
@@ -89,7 +91,7 @@ You don't have to do all the things again. Simply, clone the first virtual machi
 
 ![SS-3-3](./screenshots/3_create_second_slave_machine/3.png)
 
-- After login enter the command below:
+- After login, run the command below:
 ```bash
 sudo hostnamectl set-hostname slave-2 # Change hostname to slave-2
 exit # Logout to check the new host-name
@@ -100,12 +102,12 @@ exit # Logout to check the new host-name
 ![SS-3-4](./screenshots/3_create_second_slave_machine/4.png)
 
 
-We have 2 Virtual Ubuntu 18 machines now. Note that, you could have done the cloning operation later. But when you do it later, you should remember to change all variables specific to the machine, such as IP. 
+We have 2 Virtual Ubuntu 18 machines now. Note that, you could have done the cloning operation later. But when you do it later, you should remember to change all variables specific to the machine, such as IP address. 
 
 ## 1.4. Network & SSH Configuration of Both Slave Machines
-We can configure IP addresses and SSH to make the system easy to use and maintain.
+We can configure IP addresses and SSH to make the system maintainable and easy to use.
 
-- First of all, updating systems could be useful. Log into both machines and enter the command:
+- First of all, updating systems could be useful. Log into both machines and run the command:
 ```bash
 sudo apt update && sudo apt upgrade
 ```
@@ -115,16 +117,18 @@ sudo apt update && sudo apt upgrade
 
 This is a default IP address for virtual machine. All machines can connect to the internet with this IP address, but cannot connect to each other directly. So, we need a private network for 3 machines and IP addresses must follow the pattern of "192.168.X.Y". 
 
-- If your local machine is connected to the internet (otherwise you couldn't update the virtual machines), your local machine must have already a private network IP address which starts with "192.168". We need to determine which **network interface** is responsible for this network in local. So, run the command ```ifconfig``` in your _local machine_. The output would be like this:
+- If your local machine is connected to the internet (otherwise you couldn't have updated the virtual machines), your local machine must have already a private network IP address starts with "192.168". We need to determine which **network interface** is responsible for this network in local. So, run the command ```ifconfig``` in your _local machine_. The output would be like this:
 
 ![SS-4-2](./screenshots/4_network_configuration/2.png) 
 
-The network interface we should remember is _enp3s0_ in this scenario.
+The network interface we should remember is _enp3s0_ in this case.
 
 - Go to VirtualBox, right click on both virtual machines, go to _Settings_ and go to _Network_ tab. You should see "NAT" adapter attached. Change this to "Bridged Adapter" and change name to "enp3s0" (i.e. the network interface we found). You don't need any other adapter. Apply this for _both machines_, as shown below:
 
 ![SS-4-3](./screenshots/4_network_configuration/3.png) 
-![SS-4-4](./screenshots/4_network_configuration/4.png) 
+![SS-4-4](./screenshots/4_network_configuration/4.png)
+
+**Note:** In a company or a restricted network, new IP adresses for private network could be blocked and unable to connect to the internet. In this case, contact system admin and ask her/him to allow virtual machines' MAC IP addresses. Alternatively, system admin can allow the IP addresses only, but in this case if IP addresses of virtual machines change, system admin should do the same work again. Also, make sure IP addresse of your virtual machines don't overlap with any other machine in the network.
 
 - Login to both machines and run the command ```ifconfig```. You will see that each machine has its own IP starts with "192.168", as shown below:
 
@@ -132,7 +136,6 @@ The network interface we should remember is _enp3s0_ in this scenario.
 ![SS-4-6](./screenshots/4_network_configuration/6.png)
 
 We already know that our local machine's IP is ```192.168.10.107 ```. So we can make a table like this:
-
 
 | Host-Name | IP Address     | Info                      |
 |-----------|----------------|---------------------------|
@@ -160,16 +163,16 @@ ping slave-1
 ping slave-2
 ```
 
-- You should see that ICMP packages find slaves and master machines:
+- You should see that ICMP packages find master and slave machines:
 
 ![SS-4-10](./screenshots/4_network_configuration/10.png)
 
 ## 1.5. SSH Configuration
-- First let's create a linux user dedicated to spark & hdfs operations. We created "spark-user" users in slave machines before, so we can add a user with same name in _master machine._ In master machine run the following commands:
+- First let's create a linux user dedicated to spark & HDFS operations. We created "spark-user" users in slave machines before, so we can add a user with same name in _master machine._ In master machine run the following commands:
 ```bash
 sudo adduser spark-user # Add a user with name "spark-user".
 ```
-Enter & retype a password and press enter for following questions. 
+Enter & retype a password and press enter for following questions.
 
 - Run the following command to add a group with the same name:
 ```bash
