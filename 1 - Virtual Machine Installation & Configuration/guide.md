@@ -55,7 +55,9 @@ virtualbox &
 - Choose the Ubuntu ISO, you downloaded before.
 
 ![SS-2-7](./screenshots/2_create_first_slave_machine/7.png)
+
 ![SS-2-8](./screenshots/2_create_first_slave_machine/8.png)
+
 ![SS-2-9](./screenshots/2_create_first_slave_machine/9.png)
 
 - Pass the initial parts and select the options. When you are in  _Profile setup_ part. We will set "Your Name" as _spark-user_, "Your server's name" as _slave-1_, "Pick a username" as _spark-user_. Names can change but user-names should be the same among all machines to be safe in future ssh connections.
